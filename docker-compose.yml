@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile}
+    ports:
+      - 3000:3000
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+    profiles:
+      - dev
+      - prod
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_DB: movies
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    profiles:
+      - dev
+volumes:
+  postgres-data:
