@@ -15,10 +15,14 @@ import { AuthType } from '../auth/types/auth.type';
 
 // Repositories
 import { FavoriteRepository } from './repositories/favorite.repository';
+import { MoviesService } from '../movies/movies.service';
 
 @Injectable()
 export class FavoritesService {
-  constructor(private readonly favorityRepository: FavoriteRepository) {}
+  constructor(
+    private readonly favorityRepository: FavoriteRepository,
+    private readonly moviesService: MoviesService,
+  ) {}
 
   async create(favoriteCreateDto: FavoriteCreateDto, auth: AuthType) {
     // Create the record
@@ -52,7 +56,9 @@ export class FavoritesService {
       });
 
     // Return result
-    return result;
+    return await Promise.all(
+      result.map(async (i) => await this.moviesService.findOne(i.movie_code)),
+    );
   }
 
   async remove(id: number, auth: AuthType) {
